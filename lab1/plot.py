@@ -36,29 +36,57 @@ infinite_table.to_csv('infinite_table.csv', index=False)
 # Plot avg vs ro, idle vs ro, and ploss vs ro for finite data for each K
 K_values = finite_data['K'].unique()
 
+plt.figure(figsize=(12, 6))
 for K in K_values:
     subset_data = finite_data[finite_data['K'] == K]
+    plt.plot(subset_data['ro'], subset_data['avg'], marker='o', label=f'K={K} Average')
+    # plt.plot(subset_data['ro'], subset_data['ploss'], marker='o', label=f'K={K} Packet Loss')
+
+plt.xlabel('Ro (Traffic Load)')
+plt.ylabel('Average # Packets in Queue')
+plt.title('Average  vs Ro for Finite Data')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(12, 6))
+for K in K_values:
+    subset_data = finite_data[finite_data['K'] == K]
+    # plt.plot(subset_data['ro'], subset_data['avg'], marker='o', label=f'K={K} Average')
+    plt.plot(subset_data['ro'], subset_data['ploss'], marker='o', label=f'K={K} Packet Loss')
+
+plt.xlabel('Ro (Traffic Load)')
+plt.ylabel('% Packets Lost')
+plt.title('Packet Loss vs Ro for Finite Data')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# for K in K_values:
+#     subset_data = finite_data[finite_data['K'] == K]
     
-    plt.figure(figsize=(12, 6))
-    plt.subplot(1, 2, 1)
-    plt.plot(subset_data['ro'], subset_data['avg'], marker='o', label='Average')
-    plt.xlabel('Ro (Traffic Load)')
-    plt.ylabel('Average # Packets in Queue')
-    plt.title(f'Average vs Ro for Finite Data (K={K})')
-    plt.grid(True)
-    plt.legend()
+#     plt.figure(figsize=(12, 6))
+#     plt.subplot(1, 2, 1)
+#     plt.plot(subset_data['ro'], subset_data['avg'], marker='o', label='Average')
+#     plt.xlabel('Ro (Traffic Load)')
+#     plt.ylabel('Average # Packets in Queue')
+#     plt.title(f'Average vs Ro for Finite Data (K={K})')
+#     plt.grid(True)
+#     plt.legend()
 
-    plt.subplot(1, 2, 2)
-    plt.plot(subset_data['ro'], subset_data['ploss'], marker='o', label='Lost')
-    plt.xlabel('Ro (Traffic Load)')
-    plt.ylabel('Packets Lost')
-    plt.title(f'Packet Loss vs Ro for Finite Data (K={K})')
-    plt.grid(True)
-    plt.legend()
+#     plt.subplot(1, 2, 2)
+#     plt.plot(subset_data['ro'], subset_data['ploss'], marker='o', label='Lost')
+#     plt.xlabel('Ro (Traffic Load)')
+#     plt.ylabel('Packets Lost')
+#     plt.title(f'Packet Loss vs Ro for Finite Data (K={K})')
+#     plt.grid(True)
+#     plt.legend()
 
-    plt.tight_layout()
-    plt.show()
+#     plt.tight_layout()
+#     plt.show()
 
     # Create a table for finite data
-    finite_table = subset_data[['Type', 'ro', 'avg', 'idle', 'ploss']].copy()
-    finite_table.to_csv(f'finite_table_K_{K}.csv', index=False)
+    # finite_table = subset_data[['Type', 'ro', 'avg', 'idle', 'ploss']].copy()
+    # finite_table.to_csv(f'finite_table_K_{K}.csv', index=False)

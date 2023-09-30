@@ -14,7 +14,7 @@ plt.subplot(1, 2, 1)
 plt.plot(infinite_data['ro'], infinite_data['avg'], marker='o', label='Average')
 plt.xlabel('Ro (Traffic Load)')
 plt.ylabel('Average # Packets in Queue')
-plt.title('Average vs Ro for Infinite Data')
+plt.title('Average # Packets in Queue vs Ro for Infinite Buffer')
 plt.grid(True)
 plt.legend()
 
@@ -22,16 +22,19 @@ plt.subplot(1, 2, 2)
 plt.plot(infinite_data['ro'], infinite_data['idle'], marker='o', label='Idle')
 plt.xlabel('Ro (Traffic Load)')
 plt.ylabel('Portion Spent Idle')
-plt.title('Idle vs Ro for Infinite Data')
+plt.title('Idle vs Ro for Infinite Buffer')
 plt.grid(True)
 plt.legend()
 
 plt.tight_layout()
+plt.savefig('infinite_data_avg.png')  # Save the plot
 plt.show()
+
+
 
 # Create a table for infinite data
 infinite_table = infinite_data[['Type', 'ro', 'avg', 'idle', 'K']].copy()
-infinite_table.to_csv('infinite_table.csv', index=False)
+# infinite_table.to_csv('infinite_table.csv', index=False)
 
 # Plot avg vs ro, idle vs ro, and ploss vs ro for finite data for each K
 K_values = finite_data['K'].unique()
@@ -44,10 +47,11 @@ for K in K_values:
 
 plt.xlabel('Ro (Traffic Load)')
 plt.ylabel('Average # Packets in Queue')
-plt.title('Average  vs Ro for Finite Data')
+plt.title('Average # Packets in Queue vs Ro for Finite Buffer')
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
+plt.savefig('finite_data_avg.png')  # Save the plot
 plt.show()
 
 plt.figure(figsize=(12, 6))
@@ -58,10 +62,11 @@ for K in K_values:
 
 plt.xlabel('Ro (Traffic Load)')
 plt.ylabel('% Packets Lost')
-plt.title('Packet Loss vs Ro for Finite Data')
+plt.title('% Packet Loss vs Ro for Finite Buffer')
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
+plt.savefig('finite_data_loss.png')  # Save the plot
 plt.show()
 
 # for K in K_values:

@@ -40,30 +40,32 @@ void writeToCSV(const std::string &data);
 
 int main() {
 
-    const std::string filename = "output.csv";
+    // const std::string filename = "output.csv";
 
-    // Open the file in truncation mode (clears its contents)
-    std::ofstream file(filename, std::ios::trunc);
-        if (!file.is_open()) {
-        std::cerr << "Error: Could not open the file" << std::endl;
-        return 1;
-    }
+    // // Open the file in truncation mode (clears its contents)
+    // std::ofstream file(filename, std::ios::trunc);
+    //     if (!file.is_open()) {
+    //     std::cerr << "Error: Could not open the file" << std::endl;
+    //     return 1;
+    // }
 
-    // Close the file after truncating it
-    file.close();
+    // // Close the file after truncating it
+    // file.close();
 
-    // q1();
-    for(double ro = 0.25; ro < 0.95; ro += 0.1 ){
-        infinite_buffer(ro);
-    }
-    infinite_buffer(1.2); // Q4
+    // // q1();
+    // for(double ro = 0.25; ro < 0.95; ro += 0.1 ){
+    //     infinite_buffer(ro);
+    // }
+    // infinite_buffer(1.2); // Q4
 
-    std::vector<int> K = {10, 25, 50};
-    for(int buff_size: K){
-        for(double ro = 0.5; ro < 1.5; ro+=0.1){
-            finite_buffer(ro, buff_size);
-        }
-    }
+    // std::vector<int> K = {10, 25, 50};
+    // for(int buff_size: K){
+    //     for(double ro = 0.5; ro < 1.5; ro+=0.1){
+    //         finite_buffer(ro, buff_size);
+    //     }
+    // }
+
+    q1();
     
 
 
@@ -80,12 +82,12 @@ void q1(){
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dis(0, 1.0);
     std::vector<double> results;
-    double avg = 1/75;
+    double lambda = 75; // avg = 1/75
 
     // Generate a random number between 0 and 1
     for(int i=0; i<1000; i++){
         double random_number = dis(gen);
-        double x = -(avg)*std::log(1-random_number);
+        double x = -(1/lambda)*std::log(1-random_number);
         results.push_back(x);
     }
 
@@ -105,7 +107,8 @@ void q1(){
 
     variance /= results.size();
 
-    std::cout << "question 1 experiment avg:" << experiment_avg << " expect value: " << avg << " variance: " << variance << std::endl; 
+    std::cout << "question 1 experiment avg: " << experiment_avg << " expected avg: " << 1/lambda << std::endl 
+                << " experiment variance: " << variance << " expected variance: " << 1/(lambda*lambda) << std::endl; 
 }
 
 

@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <tuple>
 #include <queue> 
+#include <fstream>
+#include <string>
 
 #define ARRIVAL 0
 #define DEPARTURE 1
@@ -34,12 +36,35 @@ void finite_buffer(double ro, int K);
 std::tuple<double, double>  get_avg_packets_in_q(std::vector<Event> events);
 double get_dropped_packets(std::vector<Event> events, int K);
 std::tuple<double, double, double> get_finite_stats(std::priority_queue<Event, std::vector<Event>, EventCompare> events, int K);
+void writeToCSV(const std::string &data);
 
 int main() {
 
+    const std::string filename = "output.csv";
+
+    // Open the file in truncation mode (clears its contents)
+    std::ofstream file(filename, std::ios::trunc);
+        if (!file.is_open()) {
+        std::cerr << "Error: Could not open the file" << std::endl;
+        return 1;
+    }
+
+    // Close the file after truncating it
+    file.close();
+
     // q1();
-    infinite_buffer(0.55);
-    finite_buffer(0.55, 10);
+    for(double ro = 0.25; ro < 0.95; ro += 0.1 ){
+        infinite_buffer(ro);
+    }
+    infinite_buffer(1.2); // Q4
+
+    std::vector<int> K = {10, 25, 50};
+    for(int buff_size: K){
+        for(double ro = 0.5; ro < 1.5; ro+=0.1){
+            finite_buffer(ro, buff_size);
+        }
+    }
+    
 
 
     return 0;
@@ -55,7 +80,7 @@ void q1(){
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dis(0, 1.0);
     std::vector<double> results;
-    double avg = 75;
+    double avg = 1/75;
 
     // Generate a random number between 0 and 1
     for(int i=0; i<1000; i++){
@@ -71,8 +96,16 @@ void q1(){
     }
 
     double experiment_avg = sum / results.size();
+    double variance = 0;
 
-    std::cout << "question 1 experiment avg:" << experiment_avg << " expect value: " << avg << std::endl; 
+    for (double &value : results) {
+        double diff = value - experiment_avg;
+        variance += diff * diff;
+    }
+
+    variance /= results.size();
+
+    std::cout << "question 1 experiment avg:" << experiment_avg << " expect value: " << avg << " variance: " << variance << std::endl; 
 }
 
 
@@ -133,6 +166,8 @@ void infinite_buffer(double ro){
     // for (const Event& event : events) {
     //     std::cout << "Arrival Time: " << event.arrival_time << "  Departure Time: " << event.departure_time << std::endl;
     // }
+    std::string output = "infinite," + std::to_string(ro) + "," + std::to_string(avg) + "," + std::to_string(idle);
+    writeToCSV(output);
 }
 
 std::tuple<double, double> get_avg_packets_in_q(std::vector<Event> events){
@@ -163,7 +198,21 @@ std::tuple<double, double> get_avg_packets_in_q(std::vector<Event> events){
 }
 
 
+void writeToCSV( const std::string &data) {
+    // Open the file in append mode
+    std::ofstream csvFile("output.csv", std::ios::app);
 
+    if (!csvFile.is_open()) {
+        std::cerr << "Error: Could not open the CSV file." << std::endl;
+        return;
+    }
+
+    // Write the data as a new line in the CSV file
+    csvFile << data << std::endl;
+
+    // Close the file
+    csvFile.close();
+}
 
 void finite_buffer(double ro, int K){
     
@@ -200,12 +249,14 @@ void finite_buffer(double ro, int K){
         eventQueue.push({time_elapsed, OBSERVER}); // add observer event
     }
 
-    double avg, idle, dropped;
-    std::tie(avg, idle, dropped) = get_finite_stats(eventQueue, K);
-    std::cout << "K: " << K << " ro: " << ro << " Average # packets in queue: " << avg << " portion spent idle: " << idle << " Dropped " << dropped << " packets" << std::endl;
+    double avg, idle, ploss;
+    std::tie(avg, idle, ploss) = get_finite_stats(eventQueue, K);
+    std::cout << "K: " << K << " ro: " << ro << " Average # packets in queue: " << avg << " portion spent idle: " << idle << " Dropped " << ploss << " packets" << std::endl;
     // for (const Event& event : events) {
     //     std::cout << "Arrival Time: " << event.arrival_time << "  Departure Time: " << event.departure_time << std::endl;
     // }
+    std::string output = "finite," + std::to_string(ro) + "," + std::to_string(avg) + "," + std::to_string(idle) + "," + std::to_string(ploss) +","+ std::to_string(K);
+    writeToCSV(output);
 }
 
 
@@ -216,7 +267,7 @@ std::tuple<double, double, double> get_finite_stats(std::priority_queue<Event, s
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dis(0, 1.0);
 
-    double count, dropped, departure_time, total, observer_count, idle, req_made = 0;
+    double count = 0, dropped = 0, departure_time = 0, total = 0, observer_count = 0, idle = 0, req_made = 0;
 
     while (!eventQueue.empty()) {
         Event e = eventQueue.top();
@@ -252,8 +303,8 @@ std::tuple<double, double, double> get_finite_stats(std::priority_queue<Event, s
     }
 
 
-
-    return std::make_tuple(total / observer_count, idle/observer_count, dropped); // (avg_in_q, portion_spent_idle, packets_dropped) 
+    // std::cout << "DROPPED " << dropped << " REQ " << req_made << std::endl;
+    return std::make_tuple(total / observer_count, idle/observer_count, dropped/req_made); // (avg_in_q, portion_spent_idle, packets_dropped) 
 }
 
 

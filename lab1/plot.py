@@ -11,7 +11,7 @@ finite_data = data[data['Type'] == 'finite']
 # Plot avg vs ro and idle vs ro for infinite data
 plt.figure(figsize=(12, 6))
 plt.subplot(1, 2, 1)
-plt.plot(infinite_data['ro'], infinite_data['avg'], marker='o', label='Average')
+plt.plot(infinite_data['ro'], infinite_data['avg'], marker='o', label='Average') # Add average packet count to plot
 plt.xlabel('Ro (Traffic Load)')
 plt.ylabel('Average # Packets in Queue')
 plt.title('Average # Packets in Queue vs Ro for Infinite Buffer')
@@ -19,7 +19,7 @@ plt.grid(True)
 plt.legend()
 
 plt.subplot(1, 2, 2)
-plt.plot(infinite_data['ro'], infinite_data['idle'], marker='o', label='Idle')
+plt.plot(infinite_data['ro'], infinite_data['idle'], marker='o', label='Idle') # Add idle time to plot
 plt.xlabel('Ro (Traffic Load)')
 plt.ylabel('Portion Spent Idle')
 plt.title('Idle vs Ro for Infinite Buffer')

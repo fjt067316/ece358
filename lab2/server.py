@@ -114,7 +114,7 @@ def generate_dns_answer_section(domain):
 while True:
     recv_data, addr_client = serverSocket.recvfrom(2048)
 
-    if(recv_data.decode('utf-8') == "end"):
+    if(recv_data == b"end"):
         break
     
     hex_data = ' '.join(format(byte, '02x') for byte in recv_data)

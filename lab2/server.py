@@ -114,20 +114,23 @@ def generate_dns_answer_section(domain):
 while True:
     recv_data, addr_client = serverSocket.recvfrom(2048)
 
-    if(recv_data == b"end"):
+    if recv_data == b'end':
         break
     
     hex_data = ' '.join(format(byte, '02x') for byte in recv_data)
+    print("Request:")
     print(hex_data)
     
     qname = get_dns_query(recv_data)
-    print(qname)
+    #print(qname)
     header = get_dns_header(qname)
     
     
     question_section = recv_data[12:]
     
     resp = header + question_section + generate_dns_answer_section(qname)
-    print(resp)
+    hex_resp = ' '.join(format(byte, '02x') for byte in resp)
+    print("Response:")
+    print(hex_resp)
     serverSocket.sendto(resp, addr_client)
 

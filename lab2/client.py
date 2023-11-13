@@ -53,7 +53,7 @@ def get_question_header(query):
 
     return question
 
-def decode_answer(dns_resp, question_offset):
+def decode_answer(query, dns_resp, question_offset):
     if len(dns_resp) >= 12:
         header = dns_resp[:12]
         ancount = int.from_bytes(header[6:8], byteorder='big')
@@ -73,15 +73,21 @@ def decode_answer(dns_resp, question_offset):
             # Convert the bytes to an IP address string
             rdata = '.'.join(str(byte) for byte in rdata_bytes)
             
+            rtype_printed = rtype
             
-            print(f"google.com {rtype} {rclass} {ttl} {rdata}")
+            if rtype == 1:
+                rtype_printed = 'A'
+            elif rtype == 2:
+                rtype_printed = 'NS'
+            
+            print(f"{query} : type {rtype_printed}, class {rclass}, TTL {ttl}, addr ({rdlength}) {rdata}")
             
             offset += 12 + rdlength
     
         
 while True:
     query = input("Enter Domain Name: ")
-    
+
     if query == "end":
         client_socket.sendto(b'end', (host, port))
         break
@@ -98,10 +104,10 @@ while True:
     data, server_address = client_socket.recvfrom(2048)
     
     hex_data = ' '.join(format(byte, '02x') for byte in data)
-    print(hex_data)
+    #print(hex_data)
 
     # hex_data = ''.join(format(byte, '02x') for byte in data)
-    decode_answer(data, len(question_header))
+    decode_answer(query, data, len(question_header))
     # print(data)
 
 client_socket.close()
